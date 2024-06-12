@@ -1,8 +1,13 @@
 const express = require('express')
 const mysql = require('mysql')
 const BodyParser = require('body-parser')
+const {Server} = require("socket.io")
 
 const app =express()
+
+const http = require("http")
+const server = http.createServer(app)
+const io = new Server(server)
 
 app.use(BodyParser.urlencoded({extended: true}))
 
@@ -32,6 +37,10 @@ db.connect((err) => {
             res.render("index", {users, title: 'DAFTAR MURID KELAS'},)
         })
     })
+    
+    app.get('/chat', (req, res)=>{
+        res.render("chat", {title: "masuk forum"})
+    })
 
     app.post('/tambah', (req, res)=>{
         const sqlInsert = `insert into user (nama, kelas) values ('${req.body.nama}', '${req.body.kelas}')`
@@ -52,7 +61,13 @@ db.connect((err) => {
 
 })
 
+io.on('connection', (socket)=>{
+    socket.on("message", (data) => {
+        console.log('data -> ', data)
+        socket.broadcast.emit("message", data)
+    })
+})
 
-app.listen(8000, ()=> {
+server.listen(8000, ()=> {
    console.log('server ready') 
 })
