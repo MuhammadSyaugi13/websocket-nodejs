@@ -57,6 +57,12 @@ app.set("views", "views")
 
 // })
 
+app.get('/', (req, res)=>{
+    res.status(200).json({
+        "status": "success",
+        "data": "berhasil gaes"
+    })
+})
 
 app.get('/chat', (req, res)=>{
     res.render("chat", {title: "masuk forum"})
